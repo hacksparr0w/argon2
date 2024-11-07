@@ -1,0 +1,14 @@
+[project]
+name = "argon2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "hacksparr0w", email = "hacksparr0w@protonmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+build-backend = "mesonpy"
+requires = ["meson-python"]
