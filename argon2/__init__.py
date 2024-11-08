@@ -1,13 +1,15 @@
 import ctypes
 import sys
 
+from enum import Enum
 from pathlib import Path
-from typing import Literal, Optional, TypeAlias
+from typing import Optional
 
 
 __all__ = (
     "Argon2Error",
-    "Argon2Variant",
+    "Argon2Type",
+    "Argon2Version",
 
     "argon2",
     "argon2_verify"
@@ -81,13 +83,15 @@ class _Argon2Context(ctypes.Structure):
     ]
 
 
-class _Argon2Type(ctypes.c_int):
-    ARGON2_D = 0
-    ARGON2_I = 1
-    ARGON2_ID = 2
+class Argon2Type(Enum):
+    D = 0
+    I = 1
+    ID = 2
 
 
-Argon2Variant: TypeAlias = Literal["d", "i", "id"]
+class Argon2Version(Enum):
+    V10 = 0x10
+    V13 = 0x13
 
 
 def _build_ctx(
@@ -100,7 +104,8 @@ def _build_ctx(
     ad: Optional[bytes],
     iterations: int,
     memory: int,
-    parallelism: int
+    parallelism: int,
+    version: Argon2Version
 ) -> _Argon2Context:
     password_length = len(password)
     password_buffer = (ctypes.c_uint8 * password_length) \
@@ -133,7 +138,7 @@ def _build_ctx(
         m_cost=memory,
         lanes=parallelism,
         threads=parallelism,
-        version=0x13,
+        version=version.value,
         allocate_cbk=None,
         deallocate_cbk=None,
         flags=0x00
@@ -143,7 +148,7 @@ def _build_ctx(
 _libargon.argon2_ctx.restype = ctypes.c_int
 _libargon.argon2_ctx.argtypes = [
     ctypes.POINTER(_Argon2Context),
-    _Argon2Type
+    ctypes.c_int
 ]
 
 
@@ -155,23 +160,12 @@ _libargon.argon2_verify_ctx.restype = ctypes.c_int
 _libargon.argon2_verify_ctx.argtypes = [
     ctypes.POINTER(_Argon2Context),
     ctypes.c_char_p,
-    _Argon2Type
+    ctypes.c_int
 ]
 
 
 def _get_argon2_error_messages(code: int) -> str:
     return _libargon.argon2_error_message(code).decode("utf-8")
-
-
-def _get_argon2_type(variant: Argon2Variant) -> int:
-    if variant == "d":
-        return _Argon2Type.ARGON2_D
-    elif variant == "i":
-        return _Argon2Type.ARGON2_I
-    elif variant == "id":
-        return _Argon2Type.ARGON2_ID
-
-    raise ValueError("Invalid variant")
 
 
 class Argon2Error(Exception):
@@ -190,10 +184,10 @@ def argon2(
     iterations: int = 4,
     memory: int = 32 * 1000,
     parallelism: int = 1,
-    variant: Argon2Variant = "id",
-    output_length: int = 32
+    output_length: int = 32,
+    type: Argon2Type = Argon2Type.ID,
+    version: Argon2Version = Argon2Version.V13
 ) -> bytes:
-    type = _get_argon2_type(variant)
     output_buffer = (ctypes.c_uint8 * output_length)()
     ctx = _build_ctx(
         output_buffer=output_buffer,
@@ -204,10 +198,11 @@ def argon2(
         ad=ad,
         iterations=iterations,
         memory=memory,
-        parallelism=parallelism
+        parallelism=parallelism,
+        version=version
     )
 
-    code = _libargon.argon2_ctx(ctypes.byref(ctx), type)
+    code = _libargon.argon2_ctx(ctypes.byref(ctx), type.value)
 
     if code == 0:
         return bytes(output_buffer)
@@ -225,10 +220,10 @@ def argon2_verify(
     iterations: int = 4,
     memory: int = 32 * 1000,
     parallelism: int = 1,
-    variant: Argon2Variant = "id",
-    output_length: int = 32
+    output_length: int = 32,
+    type: Argon2Type = Argon2Type.ID,
+    version: Argon2Version = Argon2Version.V13
 ) -> bool:
-    type = _get_argon2_type(variant)
     output_buffer = (ctypes.c_uint8 * output_length)()
     ctx = _build_ctx(
         output_buffer=output_buffer,
@@ -239,13 +234,14 @@ def argon2_verify(
         ad=ad,
         iterations=iterations,
         memory=memory,
-        parallelism=parallelism
+        parallelism=parallelism,
+        version=version
     )
 
     code = _libargon.argon2_verify_ctx(
         ctypes.byref(ctx),
         ctypes.c_char_p(hash),
-        type
+        type.value
     )
 
     if code == 0:

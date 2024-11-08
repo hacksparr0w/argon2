@@ -27,6 +27,8 @@ pip install git+https://github.com/hacksparr0w/argon2.git
 
 ### Python API
 
+#### `argon2.argon2`
+
 ```python
 def argon2(
     *,
@@ -37,12 +39,16 @@ def argon2(
     iterations: int = 4,
     memory: int = 32 * 1000,
     parallelism: int = 1,
-    variant: Argon2Variant = "id",
-    output_length: int = 32
+    output_length: int = 32,
+    type: Argon2Type = Argon2Type.ID,
+    version: Argon2Version = Argon2Version.V13
 ) -> bytes:
     ...
+```
 
+#### `argon2.argon2_verify`
 
+```python
 def argon2_verify(
     *,
     hash: bytes,
@@ -53,12 +59,12 @@ def argon2_verify(
     iterations: int = 4,
     memory: int = 32 * 1000,
     parallelism: int = 1,
-    variant: Argon2Variant = "id",
-    output_length: int = 32
+    output_length: int = 32,
+    type: Argon2Type = Argon2Type.ID,
+    version: Argon2Version = Argon2Version.V13
 ) -> bool:
     ...
 ```
-
 
 ## Examples
 
