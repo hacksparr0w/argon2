@@ -1,7 +1,7 @@
 [project]
 name = "argon2"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python bindings for the excellent Argon2 password hashing function"
 readme = "README.md"
 authors = [
     { name = "hacksparr0w", email = "hacksparr0w@protonmail.com" }
