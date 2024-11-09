@@ -8,7 +8,7 @@ from typing import Optional
 
 __all__ = (
     "Argon2Error",
-    "Argon2Type",
+    "Argon2Variant",
     "Argon2Version",
 
     "argon2",
@@ -83,7 +83,7 @@ class _Argon2Context(ctypes.Structure):
     ]
 
 
-class Argon2Type(Enum):
+class Argon2Variant(Enum):
     D = 0
     I = 1
     ID = 2
@@ -182,16 +182,16 @@ def argon2(
     secret: Optional[bytes] = None,
     ad: Optional[bytes] = None,
     iterations: int = 4,
-    memory: int = 32 * 1000,
-    parallelism: int = 1,
-    output_length: int = 32,
-    type: Argon2Type = Argon2Type.ID,
+    memory: int = 8 * 1024 ** 2,
+    parallelism: int = 4,
+    length: int = 32,
+    variant: Argon2Variant = Argon2Variant.ID,
     version: Argon2Version = Argon2Version.V13
 ) -> bytes:
-    output_buffer = (ctypes.c_uint8 * output_length)()
+    output_buffer = (ctypes.c_uint8 * length)()
     ctx = _build_ctx(
         output_buffer=output_buffer,
-        output_length=output_length,
+        output_length=length,
         password=password,
         salt=salt,
         secret=secret,
@@ -202,7 +202,7 @@ def argon2(
         version=version
     )
 
-    code = _libargon.argon2_ctx(ctypes.byref(ctx), type.value)
+    code = _libargon.argon2_ctx(ctypes.byref(ctx), variant.value)
 
     if code == 0:
         return bytes(output_buffer)
@@ -218,16 +218,16 @@ def argon2_verify(
     secret: Optional[bytes] = None,
     ad: Optional[bytes] = None,
     iterations: int = 4,
-    memory: int = 32 * 1000,
-    parallelism: int = 1,
-    output_length: int = 32,
-    type: Argon2Type = Argon2Type.ID,
+    memory: int = 8 * 1024 ** 2,
+    parallelism: int = 4,
+    length: int = 32,
+    variant: Argon2Variant = Argon2Variant.ID,
     version: Argon2Version = Argon2Version.V13
 ) -> bool:
-    output_buffer = (ctypes.c_uint8 * output_length)()
+    output_buffer = (ctypes.c_uint8 * length)()
     ctx = _build_ctx(
         output_buffer=output_buffer,
-        output_length=output_length,
+        output_length=length,
         password=password,
         salt=salt,
         secret=secret,
@@ -241,7 +241,7 @@ def argon2_verify(
     code = _libargon.argon2_verify_ctx(
         ctypes.byref(ctx),
         ctypes.c_char_p(hash),
-        type.value
+        variant.value
     )
 
     if code == 0:

@@ -38,8 +38,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.D,
+            "length": 32,
+            "variant": argon2.Argon2Variant.D,
             "version": argon2.Argon2Version.V10
         },
         {
@@ -73,8 +73,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.I,
+            "length": 32,
+            "variant": argon2.Argon2Variant.I,
             "version": argon2.Argon2Version.V10
         },
         {
@@ -108,8 +108,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.ID,
+            "length": 32,
+            "variant": argon2.Argon2Variant.ID,
             "version": argon2.Argon2Version.V10
         },
         {
@@ -143,8 +143,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.D,
+            "length": 32,
+            "variant": argon2.Argon2Variant.D,
             "version": argon2.Argon2Version.V13
         },
         {
@@ -178,8 +178,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.I,
+            "length": 32,
+            "variant": argon2.Argon2Variant.I,
             "version": argon2.Argon2Version.V13
         },
         {
@@ -213,8 +213,8 @@ import pytest
             "memory": 32,
             "iterations": 3,
             "parallelism": 4,
-            "output_length": 32,
-            "type": argon2.Argon2Type.ID,
+            "length": 32,
+            "variant": argon2.Argon2Variant.ID,
             "version": argon2.Argon2Version.V13
         }
     ]

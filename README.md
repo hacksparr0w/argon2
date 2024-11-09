@@ -30,6 +30,7 @@ pip install git+https://github.com/hacksparr0w/argon2.git
 #### `argon2.argon2`
 
 ```python
+
 def argon2(
     *,
     password: bytes,
@@ -37,10 +38,10 @@ def argon2(
     secret: Optional[bytes] = None,
     ad: Optional[bytes] = None,
     iterations: int = 4,
-    memory: int = 32 * 1000,
-    parallelism: int = 1,
-    output_length: int = 32,
-    type: Argon2Type = Argon2Type.ID,
+    memory: int = 8 * 1024 ** 2,
+    parallelism: int = 4,
+    length: int = 32,
+    variant: Argon2Variant = Argon2Variant.ID,
     version: Argon2Version = Argon2Version.V13
 ) -> bytes:
     ...
@@ -57,10 +58,10 @@ def argon2_verify(
     secret: Optional[bytes] = None,
     ad: Optional[bytes] = None,
     iterations: int = 4,
-    memory: int = 32 * 1000,
-    parallelism: int = 1,
-    output_length: int = 32,
-    type: Argon2Type = Argon2Type.ID,
+    memory: int = 8 * 1024 ** 2,
+    parallelism: int = 4,
+    length: int = 32,
+    variant: Argon2Variant = Argon2Variant.ID,
     version: Argon2Version = Argon2Version.V13
 ) -> bool:
     ...
@@ -76,7 +77,6 @@ salt = bytes.fromhex("4ab2ac7e577e297c6475c0fecca9ea55")
 hash = argon2.argon2(password=password, salt=salt)
 result = argon2.argon2_verify(hash=hash, password=password, salt=salt)
 ```
-
 
 ## Issues
 
